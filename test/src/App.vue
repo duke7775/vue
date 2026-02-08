@@ -1,9 +1,18 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue'
+const result = ref('')
+const sayHi = () => {
+  result.value = 'hi'
+  console.log('hi')
+}
 </script>
 
 <template>
-  <h1>Hello World </h1>
+  <h1>Test</h1>
+  <button @click="sayHi">   点我</button>
+  <p>{{ result }}</p>
+  
 </template>
 
 <style scoped>
