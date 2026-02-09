@@ -1,5 +1,4 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
 import { ref } from 'vue'
 const result = ref('')
 const sayHi = () => {
@@ -9,7 +8,8 @@ const sayHi = () => {
 </script>
 
 <template>
-  <h1>Test</h1>
+  <router-view />
+  <h1>欢迎来到学生管理系统</h1>
   <button @click="sayHi">   点我</button>
   <p>{{ result }}</p>
   
