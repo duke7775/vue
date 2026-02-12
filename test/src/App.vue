@@ -1,18 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 const result = ref('')
-const sayHi = () => {
-  result.value = 'hi'
-  console.log('hi')
-}
 </script>
 
 <template>
   <router-view />
-  <h1>欢迎来到学生管理系统</h1>
-  <button @click="sayHi">   点我</button>
-  <p>{{ result }}</p>
-  
 </template>
 
 <style scoped>
