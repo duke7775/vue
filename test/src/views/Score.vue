@@ -6,3 +6,17 @@
   <button @click="queryAllScores">查询所有成绩</button>
 
 </template>
+
+<script setup>
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const addScore = () => {
+  router.push('/score/add')
+}
+const updateScore = () => {
+  router.push('/score/update')
+}
+const queryAllScores =() => {
+  router.push('/score/queryAll')
+}
+</script>
