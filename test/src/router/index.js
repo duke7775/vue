@@ -3,6 +3,7 @@ import Student from '../views/Student.vue'
 import Score from '../views/Score.vue'
 import Subject from '../views/Subject.vue'
 import Addstudent from '../views/Addstudent.vue'
+import Updatestudent from '../views/Updatestudent.vue'
 
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -10,6 +11,7 @@ const routes = [
   {path : '/', component : Home},
   {path : '/student', component : Student},
   {path : '/student/add', component : Addstudent},
+  {path : '/student/update', component : Updatestudent},
   {path : '/score', component : Score},
   {path : '/subject', component : Subject}
 ]
