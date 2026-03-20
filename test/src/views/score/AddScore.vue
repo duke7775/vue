@@ -3,19 +3,12 @@
 
     <!-- 表单区域 -->
     <div style="margin-bottom: 30px;">
-      <h2>学生管理</h2>
+      <h2>成绩管理</h2>
 
       <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-        <input v-model="number" type="number" placeholder="学号" />
-        <input v-model="name" placeholder="姓名" />
-
-        <select v-model="gender">
-          <option value="0">女</option>
-          <option value="1">男</option>
-        </select>
-
-        <input v-model="nationality" placeholder="国籍" />
-
+        <input v-model="studentNumber" type="number" placeholder="学生学号" />
+        <input v-model="subjectName" placeholder="科目名称" />
+        <input v-model="score" type="number" placeholder="成绩" />
         <button @click="submit">添加</button>
         <button @click="goBack">返回</button>
       </div>
@@ -30,12 +23,12 @@
       加载中...
     </div>
 
-    <!-- 学生列表 -->
+    <!-- 成绩列表 -->
     <div v-else>
-      <h3>学生列表</h3>
+      <h3>成绩列表</h3>
 
       <div
-        v-if="students.length"
+        v-if="scores.length"
         style="
           max-height: 70vh;
           overflow-y: auto;
@@ -55,28 +48,26 @@
           <thead style="background: #f5f5f5;">
             <tr>
               <th style="padding: 10px;">ID</th>
-              <th style="padding: 10px;">学号</th>
-              <th style="padding: 10px;">姓名</th>
-              <th style="padding: 10px;">性别</th>
+              <th style="padding: 10px;">学生学号</th>
+              <th style="padding: 10px;">科目名称</th>
+              <th style="padding: 10px;">成绩</th>
               <th style="padding: 10px;">操作</th>
             </tr>
           </thead>
 
           <tbody>
             <tr
-              v-for="s in paginatedStudents"
+              v-for="s in paginatedScores"
               :key="s.ID"
               style="border-top: 1px solid #eee;"
             >
               <td style="padding: 10px;">{{ s.ID }}</td>
-              <td style="padding: 10px;">{{ s.Number }}</td>
-              <td style="padding: 10px;">{{ s.Name }}</td>
-              <td style="padding: 10px;">
-                {{ s.Gender == '1' ? '男' : '女' }}
-              </td>
+              <td style="padding: 10px;">{{ s.StudentNumber }}</td>
+              <td style="padding: 10px;">{{ s.SubjectName }}</td>
+              <td style="padding: 10px;">{{ s.Score }}</td>
               <td style="padding: 10px;">
                 <button
-                  @click="deleteStudent(s.ID)"
+                  @click="deleteScore(s.ID)"
                   style="color: red;"
                 >
                   删除
@@ -88,12 +79,12 @@
       </div>
 
       <p v-else style="color: gray; margin-top: 10px;">
-        暂无学生数据
+        暂无成绩数据
       </p>
 
       <!-- 分页 -->
       <div
-        v-if="students.length"
+        v-if="scores.length"
         style="text-align: center; margin-top: 15px;"
       >
         <button @click="previousPage" :disabled="currentPage === 1">
@@ -101,7 +92,7 @@
         </button>
 
         <span style="margin: 0 15px;">
-          第 {{ currentPage }} / {{ totalPages }} 页（共 {{ students.length }} 条）
+          第 {{ currentPage }} / {{ totalPages }} 页（共 {{ scores.length }} 条）
         </span>
 
         <button
@@ -118,19 +109,18 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { studentApi } from '@/api'
+import { scoreApi } from '@/api'
 
 const router = useRouter()
 
 // 表单
-const number = ref('')
-const name = ref('')
-const gender = ref('0')
-const nationality = ref('')
+const studentNumber = ref('')
+const subjectName = ref('')
+const score = ref('')
 const message = ref('')
 
 // 列表
-const students = ref([])
+const scores = ref([])
 const loading = ref(false)
 
 // 分页
@@ -138,20 +128,20 @@ const currentPage = ref(1)
 const pageSize = 10
 
 const totalPages = computed(() => {
-  return Math.ceil(students.value.length / pageSize)
+  return Math.ceil(scores.value.length / pageSize)
 })
 
-const paginatedStudents = computed(() => {
+const paginatedScores = computed(() => {
   const start = (currentPage.value - 1) * pageSize
-  return students.value.slice(start, start + pageSize)
+  return scores.value.slice(start, start + pageSize)
 })
 
 // 获取数据
-const getAllStudents = async () => {
+const getAllScores = async () => {
   loading.value = true
   try {
-    const res = await studentApi.queryList()
-    students.value = res.data.data || []
+    const res = await scoreApi.queryList()
+    scores.value = res.data.data || []
     currentPage.value = 1
   } catch (err) {
     console.error(err)
@@ -176,22 +166,20 @@ const previousPage = () => {
 // 添加
 const submit = async () => {
   try {
-    const res = await studentApi.add({
-      number: number.value,
-      name: name.value,
-      gender: gender.value,
-      nationality: nationality.value
+    const res = await scoreApi.add({
+      student_number: studentNumber.value,
+      subject_name: subjectName.value,
+      score: score.value
     })
 
     message.value = res.data.message
 
     if (res.data.code === 200 || res.data.code === 0) {
       setTimeout(() => {
-        getAllStudents()
-        number.value = ''
-        name.value = ''
-        gender.value = '0'
-        nationality.value = ''
+        getAllScores()
+        studentNumber.value = ''
+        subjectName.value = ''
+        score.value = ''
       }, 300)
     }
   } catch (err) {
@@ -200,12 +188,12 @@ const submit = async () => {
 }
 
 // 删除
-const deleteStudent = async (id) => {
-  if (!confirm('确定删除该学生吗？')) return
+const deleteScore = async (id) => {
+  if (!confirm('确定删除该成绩吗？')) return
 
   try {
-    await studentApi.delete(id)
-    getAllStudents()
+    await scoreApi.delete(id)
+    getAllScores()
 
     // 防止删完最后一页空白
     if (currentPage.value > totalPages.value) {
@@ -218,10 +206,10 @@ const deleteStudent = async (id) => {
 
 // 返回
 const goBack = () => {
-  router.push('/student')
+  router.push('/score')
 }
 
 onMounted(() => {
-  getAllStudents()
+  getAllScores()
 })
 </script>

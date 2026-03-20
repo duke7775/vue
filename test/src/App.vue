@@ -41,7 +41,7 @@ function toggle(menu: string) {
         <div v-show="openMenu === 'subject'" class="submenu">
           <router-link to="/subject/add">添加科目</router-link>
           <router-link to="/subject/update">更新科目</router-link>
-          <router-link to="/subject/queryAll">查询所有科目</router-link>
+          <router-link to="/subject/queryList">查询所有科目</router-link>
         </div>
       </div>
 
@@ -54,7 +54,7 @@ function toggle(menu: string) {
         <div v-show="openMenu === 'score'" class="submenu">
           <router-link to="/score/add">添加成绩</router-link>
           <router-link to="/score/update">更新成绩</router-link>
-          <router-link to="/score/queryAll">查询所有成绩</router-link>
+          <router-link to="/score/queryList">查询所有成绩</router-link>
         </div>
       </div>
     </div>

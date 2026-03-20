@@ -17,6 +17,6 @@ const updateSubject = () => {
   router.push('/subject/update')
 }
 const queryAllSubjects =() => {
-  router.push('/subject/queryAll')
+  router.push('/subject/queryList')
 }
 </script>

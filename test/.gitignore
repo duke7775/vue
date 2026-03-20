@@ -7,18 +7,35 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# 依赖
+node_modules/
+
+# 构建产物
+dist/
+dist-ssr/
+*.zip
+
+# 环境变量（⚠️ 必加）
+.env
+.env.*
+
+# 本地配置
 *.local
 
-# Editor directories and files
+# 编辑器
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# 系统文件
 .DS_Store
+Thumbs.db
+
+# Windows
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
+
+# 临时文件
 *.sw?

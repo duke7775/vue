@@ -3,30 +3,22 @@
 
     <!-- 编辑区域 -->
     <div style="margin-bottom: 30px;">
-      <h2>修改学生</h2>
+      <h2>修改科目</h2>
 
       <!-- 查询 -->
       <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <input v-model="searchNumber" placeholder="输入学号" />
-        <button @click="getStudent">查询</button>
+        <input v-model="searchName" placeholder="输入科目名称" />
+        <button @click="getSubject">查询</button>
       </div>
 
       <!-- 编辑表单 -->
-      <div v-if="found"
-           style="margin-top: 15px; background: #f9f9f9; padding: 15px; border-radius: 6px;">
-        
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <input v-model="number" placeholder="学号" />
-          <input v-model="name" placeholder="姓名" />
-
-          <select v-model="gender">
-            <option value="0">女</option>
-            <option value="1">男</option>
-          </select>
-
-          <input v-model="nationality" placeholder="国籍" />
-
-          <button @click="updateStudent">保存修改</button>
+      <div
+        v-if="found"
+        style="margin-top: 15px; background: #f9f9f9; padding: 15px; border-radius: 6px;"
+      >
+        <div style="display: flex; gap: 10px;">
+          <input v-model="name" placeholder="科目名称" />
+          <button @click="updateSubject">保存修改</button>
         </div>
       </div>
 
@@ -44,10 +36,10 @@
 
     <!-- 列表 -->
     <div v-else>
-      <h3>学生列表</h3>
+      <h3>科目列表</h3>
 
       <div
-        v-if="students.length"
+        v-if="subjects.length"
         style="
           max-height: 70vh;
           overflow-y: auto;
@@ -67,36 +59,31 @@
           <thead style="background: #f5f5f5;">
             <tr>
               <th style="padding: 10px;">ID</th>
-              <th style="padding: 10px;">学号</th>
-              <th style="padding: 10px;">姓名</th>
-              <th style="padding: 10px;">性别</th>
+              <th style="padding: 10px;">科目名称</th>
             </tr>
           </thead>
 
           <tbody>
             <tr
-              v-for="s in paginatedStudents"
+              v-for="s in paginatedSubjects"
               :key="s.ID"
-              style="border-top: 1px solid #eee;"
+              style="border-top: 1px solid #eee; cursor: pointer;"
+              @click="selectSubject(s)"
             >
               <td style="padding: 10px;">{{ s.ID }}</td>
-              <td style="padding: 10px;">{{ s.Number }}</td>
               <td style="padding: 10px;">{{ s.Name }}</td>
-              <td style="padding: 10px;">
-                {{ s.Gender == '1' ? '男' : '女' }}
-              </td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <p v-else style="color: gray; margin-top: 10px;">
-        暂无学生数据
+        暂无科目数据
       </p>
 
       <!-- 分页 -->
       <div
-        v-if="students.length"
+        v-if="subjects.length"
         style="text-align: center; margin-top: 15px;"
       >
         <button @click="previousPage" :disabled="currentPage === 1">
@@ -104,7 +91,7 @@
         </button>
 
         <span style="margin: 0 15px;">
-          第 {{ currentPage }} / {{ totalPages }} 页（共 {{ students.length }} 条）
+          第 {{ currentPage }} / {{ totalPages }} 页（共 {{ subjects.length }} 条）
         </span>
 
         <button
@@ -121,42 +108,39 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { studentApi } from '@/api'
+import { subjectApi } from '@/api'
 
 const router = useRouter()
 
-// ⭐ 关键：用ID更新
+// ⭐ 用ID更新
 const id = ref('')
 
-const searchNumber = ref('')
-const number = ref('')
+const searchName = ref('')
 const name = ref('')
-const gender = ref('0')
-const nationality = ref('')
 const message = ref('')
 const found = ref(false)
 
-const students = ref([])
+const subjects = ref([])
 const loading = ref(false)
 
 const currentPage = ref(1)
 const pageSize = 10
 
 const totalPages = computed(() => {
-  return Math.ceil(students.value.length / pageSize)
+  return Math.ceil(subjects.value.length / pageSize)
 })
 
-const paginatedStudents = computed(() => {
+const paginatedSubjects = computed(() => {
   const start = (currentPage.value - 1) * pageSize
-  return students.value.slice(start, start + pageSize)
+  return subjects.value.slice(start, start + pageSize)
 })
 
 // 获取列表
-const getAllStudents = async () => {
+const getAllSubjects = async () => {
   loading.value = true
   try {
-    const res = await studentApi.queryList()
-    students.value = res.data.data || []
+    const res = await subjectApi.queryList()
+    subjects.value = res.data.data || []
     currentPage.value = 1
   } catch (err) {
     console.error(err)
@@ -165,30 +149,39 @@ const getAllStudents = async () => {
   }
 }
 
+// ⭐ 点击表格直接选中
+const selectSubject = (s) => {
+  id.value = s.ID
+  name.value = s.Name
+  found.value = true
+  message.value = '已选中，可直接修改'
+}
+
 // 查询
-const getStudent = async () => {
-  if (!searchNumber.value) {
-    message.value = '请输入学号'
+const getSubject = async () => {
+  if (!searchName.value) {
+    message.value = '请输入科目名称'
     return
   }
 
   try {
-    const res = await studentApi.queryByNumber(searchNumber.value)
+    const res = await subjectApi.queryList()
     const data = res.data.data
 
-    if (!data) {
-      message.value = '未找到该学生'
+    const subject = data.find(
+      s => s.Name === searchName.value
+    )
+
+    if (!subject) {
+      message.value = '未找到该科目'
       found.value = false
+
+      name.value = ''
       return
     }
 
-    // ⭐ 保存ID
-    id.value = data.ID
-
-    number.value = data.Number
-    name.value = data.Name
-    gender.value = String(data.Gender)
-    nationality.value = data.Nationality
+    id.value = subject.ID
+    name.value = subject.Name
 
     found.value = true
     message.value = '查询成功'
@@ -199,23 +192,20 @@ const getStudent = async () => {
 }
 
 // 修改
-const updateStudent = async () => {
+const updateSubject = async () => {
   try {
-    const res = await studentApi.update({
+    const res = await subjectApi.update({
       id: id.value,
-      number: number.value,
-      name: name.value,
-      gender: gender.value,
-      nationality: nationality.value
+      name: name.value
     })
 
     message.value = res.data.message
 
     if (res.data.code === 200 || res.data.code === 0) {
       setTimeout(() => {
-        getAllStudents()
+        getAllSubjects()
         found.value = false
-        searchNumber.value = ''
+        searchName.value = ''
       }, 300)
     }
   } catch (err) {
@@ -233,10 +223,10 @@ const previousPage = () => {
 }
 
 const goBack = () => {
-  router.push('/student')
+  router.push('/subject')
 }
 
 onMounted(() => {
-  getAllStudents()
+  getAllSubjects()
 })
 </script>

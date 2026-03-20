@@ -21,7 +21,7 @@ const updateStudent = () => {
 }
 
 const queryById =() => {
-  router.push('/student/queryById')
+  router.push('/student/queryByID')
 }
 const queryByNumber =() => {
   router.push('/student/queryByNumber')
@@ -30,6 +30,6 @@ const queryByName =() => {
   router.push('/student/queryByName')
 }
 const queryAllStudents =() => {
-  router.push('/student/queryAll')
+  router.push('/student/queryList')
 }
 </script>

@@ -17,6 +17,6 @@ const updateScore = () => {
   router.push('/score/update')
 }
 const queryAllScores =() => {
-  router.push('/score/queryAll')
+  router.push('/score/queryList')
 }
 </script>
